@@ -1,0 +1,7 @@
+FROM adoptopenjdk/openjdk11:jre-11.0.13_8-alpine
+
+# Copy JAR into container image
+COPY build/libs/stella-0.0.1-SNAPSHOT.jar stella.jar
+
+# Run application using executable jar application 
+CMD ["java", "-jar", "stella.jar"]

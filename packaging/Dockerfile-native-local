@@ -1,0 +1,6 @@
+FROM gcr.io/distroless/static:nonroot
+
+COPY --from=builder build/native/nativeBuild/stella /stella
+USER nonroot
+
+CMD ["./stella"]

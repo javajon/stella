@@ -1,0 +1,4 @@
+module com.dijure.stella
+{
+    requires spring.boot;
+}

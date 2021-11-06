@@ -1,0 +1,7 @@
+FROM openjdk:11-jre-slim
+
+# Copy JAR into container image
+COPY build/libs/stella-0.0.1-SNAPSHOT.jar stella.jar
+
+# Run application using executable jar application 
+CMD ["java", "-jar", "stella.jar"]

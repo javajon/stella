@@ -1,0 +1,17 @@
+## Stage 1 : Gradle build produces the application executable jar and custom JRE
+FROM ghcr.io/graalvm/graalvm-ce:java11-21.2.0 AS builder
+
+# Copy local source
+WORKDIR /stella
+COPY . /stella
+
+# Native executable using Graal
+RUN ./gradlew nativeBuild
+
+## Stage 2 : Just the facts (binary) ma'am.
+FROM gcr.io/distroless/static:nonroot
+
+COPY --from=builder /stella/build/native/nativeBuild/stella /stella
+USER nonroot
+
+CMD ["./stella"]

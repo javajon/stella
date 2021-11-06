@@ -1,0 +1,16 @@
+## Stage 1 : Gradle build produces the application executable jar
+FROM gradle:jdk11 as builder
+
+WORKDIR /stella
+COPY --chown=gradle:gradle . .
+RUN gradle bootJar
+
+
+## Stage 2 : Final image with JRE and application executable jar
+FROM adoptopenjdk/openjdk11:jre-11.0.13_8-alpine
+
+# Copy JAR into container image
+COPY --from=builder /stella/build/libs/stella-0.0.1-SNAPSHOT.jar stella.jar
+
+# Run application using executable jar application
+CMD ["java", "-jar", "stella.jar"]
