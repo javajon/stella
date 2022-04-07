@@ -1,8 +1,7 @@
-# Because JLink provides binaries for the final container, Linux flavors in both stages must match
-# Java 13+ will be supported in Gradle 6, this project uses Gradle 7x
+# Because JLink provides binaries for the final container, Linux flavors and Java versions in both stages must match
 
 ## Stage 1 : Gradle build produces the application executable jar and custom JRE
-FROM openjdk:12-jdk-alpine AS jlinker
+FROM openjdk:17-jdk-alpine AS jlinker
 
 # Copy local source
 WORKDIR /stella
@@ -10,6 +9,7 @@ COPY . /stella
 RUN mv src/main/java/module-info.java.disabled src/main/java/module-info.java
 
 # Build jar and use JLink to create new distilled JRE
+RUN apk --no-cache add binutils
 RUN ./gradlew jar jlink --build-file build-jlink.gradle
 
 

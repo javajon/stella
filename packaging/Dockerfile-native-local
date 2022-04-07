@@ -1,6 +1,7 @@
-FROM gcr.io/distroless/static:nonroot
+FROM quay.io/quarkus/quarkus-distroless-image:1.0
 
-COPY --from=builder build/native/nativeBuild/stella /stella
+COPY build/native/nativeBuild/stella /stella
 USER nonroot
 
 CMD ["./stella"]
+

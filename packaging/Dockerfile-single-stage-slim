@@ -1,4 +1,4 @@
-FROM openjdk:11-jre-slim
+FROM openjdk:17.0.1-jdk-slim
 
 # Copy JAR into container image
 COPY build/libs/stella-0.0.1-SNAPSHOT.jar stella.jar

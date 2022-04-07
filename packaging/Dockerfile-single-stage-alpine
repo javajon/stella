@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:jre-11.0.13_8-alpine
+FROM openjdk:17-alpine
 
 # Copy JAR into container image
 COPY build/libs/stella-0.0.1-SNAPSHOT.jar stella.jar

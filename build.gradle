@@ -1,38 +1,32 @@
 plugins {
-	id 'org.springframework.boot' version '2.5.6'
+	id 'org.springframework.boot' version '2.6.7-SNAPSHOT'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
-	id 'org.springframework.experimental.aot' version '0.10.5'
-	id 'org.graalvm.buildtools.native' version '0.9.4'
+	id 'org.springframework.experimental.aot' version '0.11.4'
 }
 
-group = 'com.dijure'
+group = 'com.dijure.stella'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+sourceCompatibility = '17'
 
 repositories {
 	maven { url 'https://repo.spring.io/release' }
 	mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' }
+	maven { url 'https://repo.spring.io/snapshot' }
 }
 
 dependencies {
+	implementation 'com.google.code.findbugs:jsr305:3.0.2'  // To remove warning "unknown enum constant When.MAYBE"
 	implementation 'org.springframework.boot:spring-boot-starter'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-test {
+tasks.named('test') {
 	useJUnitPlatform()
 }
 
-bootBuildImage {
+tasks.named('bootBuildImage') {
 	builder = 'paketobuildpacks/builder:tiny'
 	environment = ['BP_NATIVE_IMAGE': 'true']
-}
-
-nativeBuild {
-	classpath processAotResources.outputs, compileAotJava.outputs
-}
-
-nativeTest {
-	classpath processAotTestResources.outputs, compileAotTestJava.outputs
 }
