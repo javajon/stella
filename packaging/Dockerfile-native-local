@@ -1,7 +1,0 @@
-FROM quay.io/quarkus/quarkus-distroless-image:1.0
-
-COPY build/native/nativeBuild/stella /stella
-USER nonroot
-
-CMD ["./stella"]
-

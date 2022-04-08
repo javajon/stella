@@ -3,7 +3,7 @@ FROM gradle:jdk17 as builder
 
 WORKDIR /stella
 COPY --chown=gradle:gradle . .
-RUN gradle bootJar
+RUN gradle build
 
 
 ## Stage 2 : Final image with JRE and application executable jar

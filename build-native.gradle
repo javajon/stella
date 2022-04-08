@@ -2,9 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.6.7-SNAPSHOT'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
-
-    // Add the jlink task
-	id 'org.beryx.jlink' version '2.25.0'
+	id 'org.springframework.experimental.aot' version '0.11.4'
 }
 
 group = 'com.dijure.stella'
@@ -21,10 +19,6 @@ repositories {
 dependencies {
 	implementation 'com.google.code.findbugs:jsr305:3.0.2'  // To remove warning "unknown enum constant When.MAYBE"
 	implementation 'org.springframework.boot:spring-boot-starter'
-
-	// Added for JLink
-	implementation 'javax.servlet:javax.servlet-api:4.0.1'
-
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
@@ -32,23 +26,7 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-// Added for JLink
-
-application {
-	mainModule = 'com.dijure.stella'
-	mainClass = 'com.dijure.stella.StellaApplication'
-}
-
-jlink {
-	options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
-	launcher {
-		name = 'stella'
-	}
-
-	forceMerge('log4j-api')  // https://github.com/beryx/badass-jlink-plugin/issues/14
-	mergedModule {
-		// https://github.com/netty/netty/issues/11753
-		// https://github.com/iTitus/skat-java/blob/986d29f6e69d99f7ea07f57e09daef40f3d491ce/build.gradle
-		excludeProvides servicePattern: 'reactor.blockhound.*'
-	}
+tasks.named('bootBuildImage') {
+	builder = 'paketobuildpacks/builder:tiny'
+	environment = ['BP_NATIVE_IMAGE': 'true']
 }
