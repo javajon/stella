@@ -1,7 +1,6 @@
 package com.dijure.stella;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.BufferedReader;
@@ -20,7 +19,7 @@ public class StellaApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(StellaApplication.class, args);
-        System.out.println("\"Stella\" counts are " + wordFrequency
+        System.out.println("\"Stella\" counts  xx are " + wordFrequency
                 ("stella", "stellahhhhh", "stelllahhhhh"));
     }
 

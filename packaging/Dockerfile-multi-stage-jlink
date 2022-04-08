@@ -10,7 +10,7 @@ RUN mv src/main/java/module-info.java.disabled src/main/java/module-info.java
 
 # Build jar and use JLink to create new distilled JRE
 RUN apk --no-cache add binutils
-RUN ./gradlew jar jlink --build-file build-jlink.gradle
+RUN ./gradlew build jlink --build-file build-jlink.gradle
 
 
 ## Stage 2 : Final image populated with custom JRE and application executable jar

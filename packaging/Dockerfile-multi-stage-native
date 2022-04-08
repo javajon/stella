@@ -1,21 +1,22 @@
-## Stage 0 : Small stage, just to access a prerequisite dependency of utility called xargs
-# FROM debian as resolve-xargs
+## Stage 0 : Small stage, just to access a prerequisite dependency of `xargs` utility
+FROM debian as resolve-xargs
 
 ## Stage 1 : Gradle build produces the application executable jar and custom JRE
 FROM quay.io/quarkus/ubi-quarkus-native-image:22.0.0-java17 as builder
 
 # Needed by gradlew, but missing from base ubi images
-# COPY --from=resolve-xargs /usr/bin/xargs /usr/bin
+COPY --from=resolve-xargs /usr/bin/xargs /usr/bin/
 
 WORKDIR /code
 COPY --chown=quarkus:quarkus gradlew ./gradlew
 COPY --chown=quarkus:quarkus gradle ./gradle
-COPY --chown=quarkus:quarkus build.gradle ./
+COPY --chown=quarkus:quarkus build-native.gradle ./
 COPY --chown=quarkus:quarkus settings.gradle ./
 COPY src ./src
 
 # Native executable using Graal
 RUN ./gradlew nativeCompile --build-file build-native.gradle
+
 
 ## Stage 2 : Just the facts (binary) ma'am. (https://quarkus.io/guides/building-native-image#using-a-distroless-base-image)
 FROM quay.io/quarkus/quarkus-distroless-image:1.0

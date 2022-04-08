@@ -7,13 +7,20 @@ plugins {
 
 group = 'com.dijure.stella'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+
+// GraalVM not available with 17 yet, 11 is the highest as of April 2022
+// Install Graal with  sdk install java  21.3.1.r11-grl  (https://sdkman.io/jdks)
+sourceCompatibility = '11'
 
 repositories {
 	maven { url 'https://repo.spring.io/release' }
 	mavenCentral()
 	maven { url 'https://repo.spring.io/milestone' }
 	maven { url 'https://repo.spring.io/snapshot' }
+}
+
+nativeBuild {
+	imageName = 'stella'
 }
 
 dependencies {
