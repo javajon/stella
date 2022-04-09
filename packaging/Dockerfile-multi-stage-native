@@ -16,9 +16,8 @@ USER quarkus
 WORKDIR /code
 COPY src ./src
 
-# Native executable using Graal
+# Experimental, (but build fails) - however the Spring Cloud Native Gradle task `bootBuildImage` does a better job.
 RUN ./gradlew nativeCompile --build-file build-native.gradle
-
 
 ## Stage 2 : Just the facts (binary) ma'am. (https://quarkus.io/guides/building-native-image#using-a-distroless-base-image)
 FROM quay.io/quarkus/quarkus-distroless-image:1.0
