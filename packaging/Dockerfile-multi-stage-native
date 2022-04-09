@@ -7,11 +7,13 @@ FROM quay.io/quarkus/ubi-quarkus-native-image:22.0.0-java17 as builder
 # Needed by gradlew, but missing from base ubi images
 COPY --from=resolve-xargs /usr/bin/xargs /usr/bin/
 
+COPY --chown=quarkus:quarkus gradlew /code/gradlew
+COPY --chown=quarkus:quarkus gradle /code/gradle
+COPY --chown=quarkus:quarkus build-native.gradle /code/
+COPY --chown=quarkus:quarkus settings.gradle /code/
+
+USER quarkus
 WORKDIR /code
-COPY --chown=quarkus:quarkus gradlew ./gradlew
-COPY --chown=quarkus:quarkus gradle ./gradle
-COPY --chown=quarkus:quarkus build-native.gradle ./
-COPY --chown=quarkus:quarkus settings.gradle ./
 COPY src ./src
 
 # Native executable using Graal
