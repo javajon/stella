@@ -7,7 +7,7 @@ RUN gradle build
 
 
 ## Stage 2 : Final image with JRE and application executable jar
-FROM openjdk:17-alpine
+FROM openjdk:17-jdk-alpine3.16
 
 # Copy JAR into container image
 COPY --from=builder /stella/build/libs/stella-0.0.1-SNAPSHOT.jar stella.jar

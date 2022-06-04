@@ -1,10 +1,11 @@
 plugins {
-	id 'org.springframework.boot' version '2.6.7-SNAPSHOT'
-	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-	id 'java'
+    id 'org.springframework.boot' version '2.7.0'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
 
-    // Add the jlink task, and a helpful reference: https://sergiomartinrubio.com/articles/build-a-docker-jre-image-with-java-17-and-spring/
-	id 'org.beryx.jlink' version '2.25.0'
+    // Added for jlink task
+    // Helpful reference: https://sergiomartinrubio.com/articles/build-a-docker-jre-image-with-java-17-and-spring/
+    id 'org.beryx.jlink' version '2.25.0'
 }
 
 group = 'com.dijure.stella'
@@ -12,73 +13,59 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
 repositories {
-	maven { url 'https://repo.spring.io/release' }
-	mavenCentral()
-	maven { url 'https://repo.spring.io/milestone' }
-	maven { url 'https://repo.spring.io/snapshot' }
+    maven { url 'https://repo.spring.io/release' }
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'com.google.code.findbugs:jsr305:3.0.2'  // To remove warning "unknown enum constant When.MAYBE"
-	implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-	// Added for JLink
-	implementation 'javax.servlet:javax.servlet-api:4.0.1'
-
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+     // Added for jlink
+    implementation 'javax.servlet:javax.servlet-api:4.0.1'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
-// For JLink plugin added above
-jar {
-	enabled = true
+tasks.named('bootBuildImage') {
+    builder = 'paketobuildpacks/builder:tiny'
+    environment = ['BP_NATIVE_IMAGE': 'true']
 }
 
 application {
-	mainModule = 'com.dijure.stella'
-	mainClass  = 'com.dijure.stella.StellaApplication'
+    mainModule = 'com.dijure.stella'
+    mainClass  = 'com.dijure.stella.StellaApplication'
 }
 
+// Lines below added for jlink
 jlink {
-	forceMerge 'log4j-api'   // https://github.com/beryx/badass-jlink-plugin/issues/14
+    options = ['--strip-debug', '--no-header-files', '--no-man-pages', '--compress', '2']
+    launcher {
+        name = 'stella'
 
-	mergedModule {
-		additive = true
-		uses 'ch.qos.logback.classic.spi.Configurator'
+        jvmArgs = [
+            '-Dlogback.configurationFile=./logback.xml',
+            '--add-reads', 'com.dijure.stella.merged.module=com.dijure.stella'
+        ]
+    }
 
-		// https://github.com/netty/netty/issues/11753
-		// https://github.com/iTitus/skat-java/blob/986d29f6e69d99f7ea07f57e09daef40f3d491ce/build.gradle
-		excludeProvides servicePattern: 'reactor.blockhound.integration.*'
+    mergedModule {
+        additive = true
+        uses 'ch.qos.logback.classic.spi.Configurator'
 
-		options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
-		launcher {
-			name = 'stella'
-		}
-	}
+        // https://github.com/netty/netty/issues/11753
+        // https://github.com/iTitus/skat-java/blob/986d29f6e69d99f7ea07f57e09daef40f3d491ce/build.gradle
+        excludeProvides servicePattern: 'reactor.blockhound.integration.*'
+    }
 
-	jpackage {
-		imageName = 'Stella'
-		skipInstaller = true
-		installerName = 'Stella'
-		installerType = 'pkg'
-	}
+    jpackage {
+        imageName = 'Stella'
+        skipInstaller = true
+        installerName = 'Stella'
+        installerType = 'pkg'
+    }
+
+    forceMerge 'log4j-api'   // https://github.com/beryx/badass-jlink-plugin/issues/14
 }
-
-tasks.jlink.doLast {
-	// Spring performs its magic by scanning the classpath, but in a modular application the classpath is replaced by the module-path.
-	// To circumvent this problem, we copy all resources into the 'config' directory and set this directory as classpath.
-	copy {
-		from "src/main/resources"
-		into "$imageDir.asFile/bin/config"
-	}
-}
-
-//	jpackage {
-//		imageName = 'Stella'
-//		skipInstaller = true
-////		installerName = 'Stella'
-////		installerType = 'pkg'
-//	}
