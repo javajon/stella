@@ -19,4 +19,4 @@ FROM alpine:3.16.0
 
 COPY --from=jlinker /stella/build/image /app
 
-ENTRYPOINT ["/app/bin/stella"]
+CMD ["/app/bin/stella"]
