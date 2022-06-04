@@ -7,7 +7,7 @@ FROM openjdk:17-jdk-alpine3.14 AS jlinker
 WORKDIR /stella
 COPY . /stella
 RUN mv src/main/java/module-info.java.disabled src/main/java/module-info.java
-RUN mv src/main/resources/logback.xml.disabled src/main/java/logback.xml.java
+RUN mv src/main/resources/logback.xml.disabled src/main/java/logback.xml
 
 # Build jar and use JLink to create new distilled JRE
 RUN apk --no-cache add binutils

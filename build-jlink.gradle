@@ -4,7 +4,6 @@ plugins {
     id 'java'
 
     // Added for jlink task
-    // Helpful reference: https://sergiomartinrubio.com/articles/build-a-docker-jre-image-with-java-17-and-spring/
     id 'org.beryx.jlink' version '2.25.0'
 }
 
@@ -29,17 +28,13 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-tasks.named('bootBuildImage') {
-    builder = 'paketobuildpacks/builder:tiny'
-    environment = ['BP_NATIVE_IMAGE': 'true']
-}
-
 application {
     mainModule = 'com.dijure.stella'
     mainClass  = 'com.dijure.stella.StellaApplication'
 }
 
 // Lines below added for jlink
+// Helpful reference: https://sergiomartinrubio.com/articles/build-a-docker-jre-image-with-java-17-and-spring/
 jlink {
     options = ['--strip-debug', '--no-header-files', '--no-man-pages', '--compress', '2']
     launcher {
