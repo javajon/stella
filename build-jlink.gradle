@@ -1,18 +1,18 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.0'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'org.springframework.boot' version '4.1.0'
+    id 'io.spring.dependency-management' version '1.1.7'
     id 'java'
 
     // Added for jlink task
-    id 'org.beryx.jlink' version '2.25.0'
+    id 'org.beryx.jlink' version '4.1.1'
 }
 
 group = 'com.dijure.stella'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+sourceCompatibility = '25'
+targetCompatibility = '25'
 
 repositories {
-    maven { url 'https://repo.spring.io/release' }
     mavenCentral()
 }
 

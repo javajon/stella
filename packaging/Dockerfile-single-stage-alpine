@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk-alpine
+FROM eclipse-temurin:25-jdk-alpine
 
 # Copy JAR into container image
 COPY build/libs/stella-0.0.1-SNAPSHOT.jar stella.jar

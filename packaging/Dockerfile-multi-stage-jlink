@@ -1,7 +1,7 @@
 # Because JLink provides binaries for the final container, Linux flavors and Java versions in both stages must match
 
 ## Stage 1 : Gradle build produces the application executable jar and custom JRE
-FROM eclipse-temurin:17-jdk-alpine AS jlinker
+FROM eclipse-temurin:25-jdk-alpine AS jlinker
 
 # Copy local source
 WORKDIR /stella
