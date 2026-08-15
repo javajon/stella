@@ -46,5 +46,20 @@ tasks.named('test') {
 // picks a current one, and pinning it is how this build ended up asking for
 // paketobuildpacks/builder:tiny, a tag that has since been retired.
 tasks.named('bootBuildImage') {
-	environment = ['BP_NATIVE_IMAGE': 'true']
+	environment = [
+		'BP_NATIVE_IMAGE': 'true',
+		// BP_JVM_VERSION is not optional here, and the failure it prevents is worth
+		// recording because the message only appears deep inside the buildpack output:
+		//
+		//   Java Major version from the JRE: 17
+		//   the Java version from the downloaded NIK/GraalVM is lower than 25 and the
+		//   Spring Boot version is >= 4.0.0; this is not supported
+		//   https://github.com/paketo-buildpacks/spring-boot/issues/562
+		//
+		// The jar targets Java 17 above, because the lab host that runs this build has an
+		// older JDK, so the buildpack sizes its GraalVM to match and picks NIK 17. Spring
+		// Boot 4 requires 25 or newer. Compiling 17-targeted classes with a 25 native-image
+		// is fine; the two versions are answering different questions.
+		'BP_JVM_VERSION': '25',
+	]
 }
