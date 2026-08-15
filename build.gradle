@@ -1,16 +1,34 @@
+// Stella counts how often the name is called in A Streetcar Named Desire. The lab that
+// uses this project compiles it three ways - a fat jar, a jlink runtime, and a GraalVM
+// native image - to compare what each one costs to ship.
+//
+// The build had stopped working entirely. Gradle 7.4.1 cannot run on Java 21, which the
+// lab image now provides, and it fails while parsing the build script rather than
+// anywhere useful. Behind that sat a second, permanent problem: the project applied
+// org.springframework.experimental.aot, the Spring Native beta plugin, which was retired
+// when Spring Boot 3 absorbed ahead-of-time processing into the framework itself. That
+// plugin is no longer published, so the build could never resolve it again.
+//
+// AOT is now built in. The GraalVM buildtools plugin below is what wires `nativeCompile`
+// into Gradle, and Spring Boot's own plugin runs the AOT processing that native images
+// need before it.
 plugins {
-	id 'org.springframework.boot' version '2.7.0'
-	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'org.springframework.boot' version '3.5.9'
+	id 'io.spring.dependency-management' version '1.1.7'
 	id 'java'
-	id 'org.springframework.experimental.aot' version '0.12.0'
+
+	id 'org.graalvm.buildtools.native' version '1.1.9'
 }
 
 group = 'com.dijure.stella'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
+}
 
 repositories {
-	maven { url 'https://repo.spring.io/release' }
 	mavenCentral()
 }
 
@@ -23,7 +41,10 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+// BP_NATIVE_IMAGE tells the Paketo buildpack to run GraalVM's native-image compiler
+// instead of packaging a JVM. The builder is deliberately not named here: Spring Boot
+// picks a current one, and pinning it is how this build ended up asking for
+// paketobuildpacks/builder:tiny, a tag that has since been retired.
 tasks.named('bootBuildImage') {
-	builder = 'paketobuildpacks/builder:tiny'
 	environment = ['BP_NATIVE_IMAGE': 'true']
 }

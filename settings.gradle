@@ -1,8 +1,4 @@
-pluginManagement {
-	repositories {
-		maven { url 'https://repo.spring.io/release' }
-		mavenCentral()
-		gradlePluginPortal()
-	}
-}
+// Released plugins only. The Spring release repository was here for the retired
+// experimental AOT plugin; everything this build needs now comes from Maven Central and
+// the Gradle plugin portal.
 rootProject.name = 'stella'
