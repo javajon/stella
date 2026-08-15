@@ -1,22 +1,8 @@
-# A custom Java runtime containing only the modules this application uses.
+# A custom Java runtime containing only the modules this application uses. See README.md
+# for why this is jdeps and jlink rather than the beryx Gradle plugin it used to be.
 #
-# Because jlink produces binaries, the Linux flavour and Java version in both stages must
-# match. Both are Alpine and Java 25.
-#
-# HOW THIS CHANGED, and why it is simpler now.
-#
-# This used to drive the beryx jlink Gradle plugin from a separate build-jlink.gradle,
-# which meant putting the application on the MODULE path: a module-info.java, a merged
-# module, and a build file selected with `--build-file`. Two things ended that. Gradle 9
-# removed --build-file and -b, so the file could no longer be selected at all. And a modern
-# Spring Boot application cannot produce a merged module without a fight - the attempt lists
-# a dozen "Cannot find module exporting ..." errors for optional dependencies of logback and
-# netty that are never used at runtime.
-#
-# jdeps and jlink do the same job with none of that. The application stays on the classpath,
-# where Spring Boot expects it; jdeps reads the jar and reports which JDK modules it
-# actually touches; jlink builds a runtime containing exactly those. Measured on Java 25:
-# eleven modules, and a runtime of 87 MB against a full JDK of 384 MB.
+# jlink produces binaries, so the Linux flavour and Java version must match across both
+# stages. Both are Alpine and Java 25.
 
 ## Stage 1 : build the jar, then a runtime sized to it
 FROM eclipse-temurin:25-jdk-alpine AS jlinker
@@ -30,8 +16,9 @@ RUN apk --no-cache add binutils unzip
 RUN ./gradlew build
 
 # Spring Boot's jar nests the application under BOOT-INF, so jdeps has to be pointed at the
-# unpacked classes and told where the dependencies are. --ignore-missing-deps is expected
-# here: the optional dependencies above are absent by design.
+# unpacked classes and told where the dependencies are. The application stays on the
+# CLASSPATH, which is what makes this work at all. --ignore-missing-deps is expected:
+# logback and netty declare optional dependencies that are absent here by design.
 RUN unzip -q build/libs/stella-0.0.1-SNAPSHOT.jar -d /extracted && \
     MODULES=$(jdeps --ignore-missing-deps --print-module-deps --multi-release 25 \
         --class-path '/extracted/BOOT-INF/lib/*' \
