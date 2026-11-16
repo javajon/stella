@@ -3,9 +3,16 @@
 #
 # jlink produces binaries, so the Linux flavour and Java version must match across both
 # stages. Both are Alpine and Java 25.
+#
+# BOTH TAGS PIN THE ALPINE VERSION, because that match has to be enforced rather than
+# hoped for. The builder used the floating `25-jdk-alpine`, which upstream moved onto
+# Alpine 3.24 while this file's runtime stage stayed pinned at 3.22 - so the two stages
+# had silently drifted apart and the comment above was no longer true. A floating tag on
+# one side of a jlink pair is exactly the drift that broke cdc-with-k8s on 2026-10-14,
+# where node:24-slim changed its bundled npm under a lockfile. Bump the two together.
 
 ## Stage 1 : build the jar, then a runtime sized to it
-FROM eclipse-temurin:25-jdk-alpine AS jlinker
+FROM eclipse-temurin:25-jdk-alpine-3.24 AS jlinker
 
 WORKDIR /stella
 COPY . /stella
@@ -30,7 +37,7 @@ RUN unzip -q build/libs/stella-0.0.1-SNAPSHOT.jar -d /extracted && \
 
 
 ## Stage 2 : the runtime and the application, and nothing else
-FROM alpine:3.22
+FROM alpine:3.24
 
 COPY --from=jlinker /jre /jre
 COPY --from=jlinker /stella/build/libs/stella-0.0.1-SNAPSHOT.jar /app/stella.jar
